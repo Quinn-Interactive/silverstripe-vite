@@ -147,6 +147,7 @@ class TemplateVar extends ViewableData implements TemplateGlobalProvider
         $src = self::viteTransformFilepath($this->file);
         $options = [
             'src' => $src,
+            'type' => $this->type ?? 'module',
         ];
         $options = array_merge($options, $this->options);
         unset($options['preload']);
