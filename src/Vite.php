@@ -339,31 +339,55 @@ class Vite implements RequirementsInterface
      */
     protected function insertPreloadTags(array $files): void
     {
+        $tags = $this->createPreloadTags($files);
         // Add preload tags to head
-        foreach (array_values($files) as $file) {
-            if (!isset($file['path'])) {
-                continue;
-            }
-
-            // Resolve full preloads url AFTER disabling nonce paths
-            $fullPath = $this->resourceURLGenerator->urlForResource($file['path']);
-
-            if (empty($fullPath)) {
-                continue;
-            }
-
-            $rel = $this->isJsPath($file['path']) ? 'modulepreload' : 'preload';
-            unset($file['path']);
-
-            $tag = HTML::createTag('link', [
-                'rel' => $rel,
-                'href' => $fullPath,
-                'crossorigin' => true,
-                ...$file,
-            ]);
-
+        foreach ($tags as $tag) {
             Requirements::insertHeadTags($tag);
         }
+    }
+
+    /**
+     * Create preload tags for the given files
+     */
+    protected function createPreloadTags(array $files): array
+    {
+        $tags = [];
+        // Add preload tags to head
+        foreach (array_values($files) as $file) {
+            $tag = $this->createPreloadTag($file);
+            if ($tag) {
+                $tags[] = $tag;
+            }
+        }
+        return $tags;
+    }
+
+    /**
+     * Create preload tags for the given files
+     */
+    public function createPreloadTag(array $file): ?string
+    {
+        if (!isset($file['path'])) {
+            return null;
+        }
+
+        // Resolve full preloads url AFTER disabling nonce paths
+        $fullPath = $this->resourceURLGenerator->urlForResource($file['path']);
+
+        if (empty($fullPath)) {
+            return null;
+        }
+
+        $rel = $this->isJsPath($file['path']) ? 'modulepreload' : 'preload';
+        unset($file['path']);
+
+        $tag = HTML::createTag('link', [
+            'rel' => $rel,
+            'href' => $fullPath,
+            'crossorigin' => true,
+            ...$file,
+        ]);
+        return $tag;
     }
 
     /**
