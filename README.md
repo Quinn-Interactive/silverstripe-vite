@@ -24,6 +24,5 @@ composer require "somardigital/silverstripe-vite"
 
 * Add unit tests
 * Fix CI
-* Implement usage in templates
 * Allow multiple manifest files
 * Add support for modules
