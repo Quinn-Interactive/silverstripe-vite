@@ -197,7 +197,7 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         return null;
     }
 
-    private function processCSS(): mixed
+    private function processCSS(): string
     {
         // are we outputing this as an inline <style>?
         if ($this->inline) {
@@ -209,7 +209,7 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         // are we using the Requirements to inject this?
         if ($this->require) {
             Vite::css($this->file, $this->media, $this->options);
-            return null;
+            return '';
         }
 
         // if not, then we're writing out tags inplace
@@ -248,7 +248,7 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         return $html;
     }
 
-    private function processJS(): mixed
+    private function processJS(): string
     {
         // are we outputing this as an inline <style>?
         if ($this->inline) {
@@ -260,7 +260,7 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         // are we using the Requirements to inject this?
         if ($this->require) {
             Vite::javascript($this->file, $this->options);
-            return null;
+            return '';
         }
 
         $src = self::viteTransformFilepath($this->file);
