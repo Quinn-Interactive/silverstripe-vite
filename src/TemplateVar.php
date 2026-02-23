@@ -4,6 +4,8 @@ namespace Somar\Vite;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Dev\Debug;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Model\ModelData;
 use SilverStripe\View\HTML;
 use SilverStripe\View\TemplateGlobalProvider;
@@ -113,6 +115,7 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         return $this;
     }
 
+
     public function CSS($file, ?string $media = null)
     {
         $this->file = $file;
@@ -218,11 +221,14 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
         $href = self::viteTransformFilepath($this->file);
         $media = $this->media ?? 'all';
         $onload = $async ? "this.media='{$media}'" : null;
+        $resource = Vite::singleton()->manifestProvider->resolveResource($this->file);
+        $path = Vite::singleton()->manifestProvider->resolvePath($resource);
         $preloadFile = [
-            'path' => $this->file,
+            'path' => $path,
             'as'   => 'style',
             'type' => 'text/css',
         ];
+
         $preload = $this->preload || $async;
         $preloadTag = $preload ? Vite::singleton()->createPreloadTag($preloadFile) : null;
         $noscriptTag = $async ? HTML::createTag('noscipt', [], HTML::createTag('link', [
@@ -271,40 +277,26 @@ class TemplateVar extends ModelData implements TemplateGlobalProvider
     public static function get_template_global_variables()
     {
         return [
-            'Vite' => [
-                'method'  => 'Vite',
-                'casting' => 'HTMLText',
-            ]
-
+            'Vite',
         ];
+    }
+
+    public function getFish(): string
+    {
+        return 'Taco';
     }
 
     public static function Vite(): self
     {
-        return new TemplateVar();
+        $vite = self::create();
+        // Debug::dump($vite->Debug()->forTemplate());
+        // Debug::dump($vite->allMethodNames());
+        return $vite;
     }
-
-    // create deferred css includes that will work with caching (not in head using Requirements)
-    public static function ViteDeferCSS($path): string
+    
+    public function __construct()
     {
-        $path = self::viteTransformFilepath($path);
-        $html = <<<EOT
-        <link rel="stylesheet" type="text/css" media="print" href="{$path}" onload="this.media='all'">
-        <link rel="preload" href="{$path}" as="style">
-        <noscript><link rel="stylesheet" type="text/css" href="{$path}"></noscript>
-        EOT;
-        return $html;
-    }
-
-    public static function ViteInlineCSS($path): string
-    {
-        $vite = Vite::singleton();
-        $root = Director::baseFolder();
-        $file = $vite->resourcePath($path);
-        $filepath = Controller::join_links($root, $file);
-        $css = file_get_contents($filepath);
-        $html = HTML::createTag('style', [], $css);
-        return $html;
+        parent::__construct();
     }
 
     public static function ViteResourceURL($path): string
