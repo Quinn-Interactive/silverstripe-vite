@@ -21,7 +21,7 @@ use SilverStripe\View\ViewableData;
  * .Defer - (js) add defer attribute
  * .Inline - (js or css) output file inline with <script> or <style> tag
  * .Media('speech') - (css) override default media attribite for css
- * .Preload(0) - (css or js) whether to preload the resource (defaults to true). Not used for inline.
+ * .Preload(1) - (css or js) whether to preload the resource (defaults to false). Not used for inline.
  * .Type('something') - (js) override js type attribute (not used for inline)
  * .Integrity('sha384-q8i/X+9...') - set integrity attribute (not used for inline)
  * .Crossorigin('anonymous') - set crossorigin attribute (defaults to true, not used for inline)
@@ -92,7 +92,7 @@ class TemplateVar extends ViewableData implements TemplateGlobalProvider
     /**
      * Options for tag, saved in an array with the key as the option name
      *
-     * - 'preload' : Boolean. Preload the resource (defaults to true) (js & css)
+     * - 'preload' : Boolean. Preload the resource (defaults to false) (js & css)
      * - 'async' : Boolean value to set async attribute to script tag or async with js and media for css (js & css)
      * - 'defer' : Boolean value to set defer attribute to script tag (js)
      * - 'type' : Override script type= value. (js)
@@ -100,10 +100,10 @@ class TemplateVar extends ViewableData implements TemplateGlobalProvider
      * - 'crossorigin' : Cross-origin policy for the resource, defaults to true (js & css)
      */
     private array $options = [
-        'preload' => true,
+        'preload' => false,
     ];
 
-    public function Preload(bool $preload = true): self
+    public function Preload(bool $preload = false): self
     {
         $this->options['preload'] = $preload;
         return $this;
