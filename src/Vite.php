@@ -2,6 +2,7 @@
 
 namespace Somar\Vite;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injectable;
@@ -258,6 +259,11 @@ class Vite implements RequirementsInterface
             $this->addJsFromManifest($import, $preloads);
         }
 
+        $resourcesPath = Controller::join_links(
+            Director::publicDir(),
+            RESOURCES_DIR
+        );
+
         foreach ($resource['css'] ?? [] as $css) {
             // The css is not necessarily an entry point so we need to dummy
             // resolve it to get the full path
@@ -269,9 +275,14 @@ class Vite implements RequirementsInterface
                 'path' => $cssPath,
                 'as' => 'style',
             ];
+            // remove public folder prefix
+            $cssPath = preg_replace("{^{$resourcesPath}/}", '', $cssPath);
 
             Requirements::css($cssPath);
         }
+
+        // remove public folder prefix
+        $path = preg_replace("{^{$resourcesPath}/}", '', $path);
 
         Requirements::javascript($path, [
             'type' => 'module',
@@ -299,6 +310,13 @@ class Vite implements RequirementsInterface
             'path' => $path,
             'as' => 'style',
         ];
+
+        // remove public folder prefix
+        $resourcesPath = Controller::join_links(
+            Director::publicDir(),
+            RESOURCES_DIR
+        );
+        $path = preg_replace("{^{$resourcesPath}/}", '', $path);
 
         Requirements::css($path, $media, $options);
     }
