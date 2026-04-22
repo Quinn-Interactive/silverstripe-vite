@@ -250,7 +250,7 @@ class TemplateVar extends ViewableData implements TemplateGlobalProvider
             'as'   => 'style',
             'type' => 'text/css',
         ];
-        $preload = $this->preload || $async;
+        $preload = $this->preload;
         $preloadTag = $preload ? Vite::singleton()->createPreloadTag($preloadFile) : null;
         $noscriptTag = $async ? HTML::createTag('noscipt', [], HTML::createTag('link', [
             'rel'  => 'stylesheet',
