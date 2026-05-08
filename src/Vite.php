@@ -492,6 +492,7 @@ class Vite implements RequirementsInterface
         curl_setopt($ch, CURLOPT_NOBODY, true);        // HEAD request only
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); // Skip SSL Verification
 
         curl_exec($ch);
 
